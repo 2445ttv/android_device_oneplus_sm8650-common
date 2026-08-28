@@ -62,18 +62,7 @@ blob_fixups: blob_fixups_user_type = {
         'odm/bin/hw/vendor-oplus-hardware-touch-V2-service',
         'odm/bin/hw/vendor.oplus.hardware.biometrics.fingerprint@2.1-service_uff',
         'odm/bin/touchDaemon',
-        'vendor/bin/poweropt-service',
         'vendor/bin/qvrdatauploader',
-        'vendor/lib64/libaodoptfeature.so',
-        'vendor/lib64/libapengine.so',
-        'vendor/lib64/libgamepoweroptfeature.so',
-        'vendor/lib64/liblearningmodule.so',
-        'vendor/lib64/liboffscreenpoweroptfeature.so',
-        'vendor/lib64/libpowercallback.so',
-        'vendor/lib64/libpowercore.so',
-        'vendor/lib64/libpsmoptfeature.so',
-        'vendor/lib64/libstandbyfeature.so',
-        'vendor/lib64/libvideooptfeature.so',
     ): blob_fixup()
         .replace_needed('libtinyxml2.so', 'libtinyxml2-v34.so'),
     'odm/etc/gps.conf': blob_fixup()
@@ -109,7 +98,8 @@ blob_fixups: blob_fixups_user_type = {
         'vendor/etc/media_codecs_cliffs_v1.xml',
         'vendor/etc/media_codecs_pineapple.xml',
     ): blob_fixup()
-        .regex_replace('.*media_codecs_(google_audio|google_c2|google_telephony|google_video|vendor_audio).*\n', ''),
+        .regex_replace('.*media_codecs_(google_audio|google_c2|google_telephony|google_video|vendor_audio).*\n', '')
+        .regex_replace(r'(<MediaCodecs>)', r'\1\n    <Include href="media_codecs_dolby_audio.xml" />\n    <Include href="media_codecs_dolby_vision.xml" />'),
     'vendor/etc/init/nicmd.rc': blob_fixup()
         .regex_replace(
             r'(service\s+vendor\.nicmd\s+/system/vendor/bin/nicmd\s*\n\s*class\s+main)',
@@ -120,8 +110,6 @@ blob_fixups: blob_fixups_user_type = {
             r'(service\s+vendor\.dpmd\s+/vendor/bin/vendor\.dpmd\s*\n)',
             r'\1    user root\n'
         ),
-    'vendor/etc/pwr/PowerFeatureConfig.xml': blob_fixup()
-        .regex_replace(r'(<Name>GamePowerOptFeature</Name>\s*<Enable>)0(<\/Enable>)', r'\g<1>1\g<2>'),
     'vendor/etc/seccomp_policy/gnss@2.0-qsap-location.policy': blob_fixup()
         .add_line_if_missing('sched_get_priority_min: 1')
         .add_line_if_missing('sched_get_priority_max: 1'),
